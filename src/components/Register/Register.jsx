@@ -2,6 +2,29 @@ import { TextField, Container, Button } from "@mui/material"
 import "./registerStyles.css"
 import notesLogo from "../../assets/notes-logo.png"
 
+const validatePassword = (password) => {
+    // At least 8 characters, one uppercase letter, one lowercase letter, one number, one special character
+    const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    if (passwordRegex.test(password) === false) {
+        alert(
+            "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+        )
+    } else {
+        alert("Registered successfully!")
+    }
+}
+
+const validatePasswordsMatch = (password, confirmPassword) => {
+    return password === confirmPassword
+}
+
+const validateUsername = (username) => {
+    // Username must be 3-20 characters, alphanumeric and underscores only
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
+    return usernameRegex.test(username)
+}
+
 export default function Register() {
     return (
         <div className="register-container">
@@ -19,6 +42,7 @@ export default function Register() {
                     label="Username"
                     variant="standard"
                     type="text"
+                    color="black"
                     required
                 />
 
@@ -27,6 +51,7 @@ export default function Register() {
                     label="Password"
                     variant="standard"
                     type="password"
+                    color="black"
                     slotProps={{ htmlInput: { minLength: 8 } }}
                     required
                 />
@@ -36,21 +61,14 @@ export default function Register() {
                     label="Confirm Password"
                     variant="standard"
                     type="password"
+                    color="black"
                     required
                 />
 
                 <Button
                     id="register-submit-button"
                     onClick={() => {
-                        if (
-                            document.getElementById("password-field").value !==
-                            document.getElementById("confirm-password-field")
-                                .value
-                        ) {
-                            alert("Passwords do not match!")
-                        } else {
-                            alert("Registered successfully!")
-                        }
+                        alert("clicked") //add validation later
                     }}
                     variant="outlined"
                     color="black"
