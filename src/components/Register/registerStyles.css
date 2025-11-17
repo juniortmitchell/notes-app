@@ -1,11 +1,14 @@
 .register-container {
     display: flex;
     flex-direction: row;
-    padding-bottom: 1rem;
-    padding-top: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     border: 2px solid black;
+    width: 90%;
+    max-width: 1200px;
+    min-height: 70vh;
+    margin: 2rem auto;
+    border-radius: 8px;
 }
 
 .register-container-welcome {
@@ -15,6 +18,10 @@
     justify-content: center;
     padding: 1rem;
     border-right: 1px solid #e0e0e0;
+    background: #0F2027;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: white;
 }
 
 .register-input-container {
@@ -26,7 +33,11 @@
 
 #register-submit-button {
     margin-top: 1rem;
-    
+    background: #0F2027;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: white;
+    font-weight: bold;
 }
 
 @media screen and (max-width: 600px) {
@@ -43,11 +54,16 @@
 }
 
 a {
-    color: black;
+    color: white;
     font-weight: bold;
     text-decoration: underline;
 }
 
 a:hover {
-    color: gray;
+    color: #e0e0e0;
+    cursor: pointer;
+}
+
+img {
+    filter: brightness(0) invert(1);
 }

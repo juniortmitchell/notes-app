@@ -7,17 +7,21 @@ export default function Header() {
                 <h1 className="header-logo">notes</h1>
                 <p>by junior</p>
             </div>
-            <div className="header-links">
-                <a className="header-link" href="#">
-                    log in
-                </a>
-                <a className="header-link" href="#">
-                    register
-                </a>
-                <a className="header-link" href="#">
-                    about
-                </a>
-            </div>
+            <span className="header-links">
+                <div className="header-navigation">
+                    <a className="header-link" href="#">
+                        about
+                    </a>
+                </div>
+                <div className="header-auth">
+                    <a className="header-link" href="#">
+                        register
+                    </a>
+                    <a className="header-link" href="#">
+                        log in
+                    </a>
+                </div>
+            </span>
         </header>
     )
 }

@@ -27,10 +27,10 @@ export default function Register() {
                     height={100}
                     alt="notes app logo"
                 />
-                <h1>welcome!</h1>
-                <p>create an account to start taking notes.</p>
+                <h1>Welcome!</h1>
+                <p>Create an account to start taking notes.</p>
                 <p>
-                    already have an account? <a>log in</a>
+                    Already have an account? <a>Log in</a>
                 </p>
             </Container>
             <Container maxWidth="sm" className="register-input-container">
