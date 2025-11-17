@@ -145,6 +145,16 @@ export default function Register() {
                             setSuccessMessage(
                                 "Registration successful! Redirecting to login..."
                             )
+
+                            //Add jwt to local storage
+                            localStorage.setItem("token", result.data.token)
+                            if (localStorage.getItem("token")) {
+                                console.log(
+                                    "Token stored:",
+                                    localStorage.getItem("token")
+                                )
+                            }
+
                             // Clear form
                             usernameField.value = ""
                             passwordField.value = ""
