@@ -1,39 +1,26 @@
 import { TextField, Container, Button } from "@mui/material"
 import "./registerStyles.css"
 import notesLogo from "../../assets/notes-logo.png"
-
-const validatePassword = (password) => {
-    // At least 8 characters, one uppercase letter, one lowercase letter, one number, one special character
-    const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-    if (passwordRegex.test(password) === false) {
-        alert(
-            "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-        )
-    } else {
-        alert("Registered successfully!")
-    }
-}
-
-const validatePasswordsMatch = (password, confirmPassword) => {
-    return password === confirmPassword
-}
-
-const validateUsername = (username) => {
-    // Username must be 3-20 characters, alphanumeric and underscores only
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
-    return usernameRegex.test(username)
-}
+import { handlePasswords, handleUsername } from "./registerValidation"
+import { useState } from "react"
 
 export default function Register() {
+    const [error, hasError] = useState(false)
+    const [usernameError, hasUsernameError] = useState(false)
+
     return (
         <div className="register-container">
             <Container className="register-container-welcome">
-                <h1> U+1F44B </h1>
-                <h1>Welcome!</h1>
-                <p>Create an account to start taking notes.</p>
+                <img
+                    src={notesLogo}
+                    width={100}
+                    height={100}
+                    alt="notes app logo"
+                />
+                <h1>welcome!</h1>
+                <p>create an account to start taking notes.</p>
                 <p>
-                    Already have an account? <a>Log in</a>
+                    already have an account? <a>log in</a>
                 </p>
             </Container>
             <Container maxWidth="sm" className="register-input-container">
@@ -44,6 +31,12 @@ export default function Register() {
                     type="text"
                     color="black"
                     required
+                    error={usernameError}
+                    helperText={
+                        usernameError
+                            ? "Username must be 3-20 characters, alphanumeric and underscores only."
+                            : ""
+                    }
                 />
 
                 <TextField
@@ -54,6 +47,12 @@ export default function Register() {
                     color="black"
                     slotProps={{ htmlInput: { minLength: 8 } }}
                     required
+                    error={error}
+                    helperText={
+                        error
+                            ? "Passwords do not match or need to be at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character."
+                            : ""
+                    }
                 />
 
                 <TextField
@@ -63,12 +62,46 @@ export default function Register() {
                     type="password"
                     color="black"
                     required
+                    error={error}
                 />
 
                 <Button
                     id="register-submit-button"
                     onClick={() => {
-                        alert("clicked") //add validation later
+                        const passwordField =
+                            document.getElementById("password-field")
+                        const confirmPasswordField = document.getElementById(
+                            "confirm-password-field"
+                        )
+
+                        const usernameField =
+                            document.getElementById("username-field")
+
+                        if (handleUsername(usernameField.value) === false) {
+                            hasUsernameError(true)
+                            return
+                        } else {
+                            hasUsernameError(false)
+                        }
+
+                        if (
+                            !handlePasswords(
+                                passwordField.value,
+                                confirmPasswordField.value
+                            )
+                        ) {
+                            hasError(true)
+                            passwordField.helperText =
+                                "Passwords do not match or do not meet criteria."
+                            confirmPasswordField.helperText =
+                                "Passwords do not match or do not meet criteria."
+                            return
+                        } else {
+                            hasError(false)
+                            hasUsernameError(false)
+                            passwordField.helperText = ""
+                            confirmPasswordField.helperText = ""
+                        }
                     }}
                     variant="outlined"
                     color="black"
