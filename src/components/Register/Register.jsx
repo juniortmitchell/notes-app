@@ -1,12 +1,22 @@
-import { TextField, Container, Button } from "@mui/material"
+import {
+    TextField,
+    Container,
+    Button,
+    CircularProgress,
+    Alert,
+} from "@mui/material"
 import "./registerStyles.css"
 import notesLogo from "../../assets/notes-logo.png"
 import { handlePasswords, handleUsername } from "./registerValidation"
+import { registerUser } from "../../services/api"
 import { useState } from "react"
 
 export default function Register() {
     const [error, hasError] = useState(false)
     const [usernameError, hasUsernameError] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [apiError, setApiError] = useState(null)
+    const [successMessage, setSuccessMessage] = useState(null)
 
     return (
         <div className="register-container">
@@ -24,6 +34,20 @@ export default function Register() {
                 </p>
             </Container>
             <Container maxWidth="sm" className="register-input-container">
+                {apiError && (
+                    <Alert severity="error" onClose={() => setApiError(null)}>
+                        {apiError}
+                    </Alert>
+                )}
+                {successMessage && (
+                    <Alert
+                        severity="success"
+                        onClose={() => setSuccessMessage(null)}
+                    >
+                        {successMessage}
+                    </Alert>
+                )}
+
                 <TextField
                     id="username-field"
                     label="Username"
@@ -67,7 +91,11 @@ export default function Register() {
 
                 <Button
                     id="register-submit-button"
-                    onClick={() => {
+                    onClick={async () => {
+                        // Clear previous messages
+                        setApiError(null)
+                        setSuccessMessage(null)
+
                         const passwordField =
                             document.getElementById("password-field")
                         const confirmPasswordField = document.getElementById(
@@ -77,6 +105,7 @@ export default function Register() {
                         const usernameField =
                             document.getElementById("username-field")
 
+                        // Validate username
                         if (handleUsername(usernameField.value) === false) {
                             hasUsernameError(true)
                             return
@@ -84,6 +113,7 @@ export default function Register() {
                             hasUsernameError(false)
                         }
 
+                        // Validate passwords
                         if (
                             !handlePasswords(
                                 passwordField.value,
@@ -102,11 +132,37 @@ export default function Register() {
                             passwordField.helperText = ""
                             confirmPasswordField.helperText = ""
                         }
+
+                        // If validation passes, make API call
+                        setLoading(true)
+                        const result = await registerUser({
+                            username: usernameField.value,
+                            password: passwordField.value,
+                        })
+                        setLoading(false)
+
+                        if (result.success) {
+                            setSuccessMessage(
+                                "Registration successful! Redirecting to login..."
+                            )
+                            // Clear form
+                            usernameField.value = ""
+                            passwordField.value = ""
+                            confirmPasswordField.value = ""
+
+                            // TODO: Redirect to login page or dashboard after 2 seconds
+                            // setTimeout(() => {
+                            //     window.location.href = '/login'
+                            // }, 2000)
+                        } else {
+                            setApiError(result.error)
+                        }
                     }}
                     variant="outlined"
                     color="black"
+                    disabled={loading}
                 >
-                    Register
+                    {loading ? <CircularProgress size={24} /> : "Register"}
                 </Button>
             </Container>
         </div>
