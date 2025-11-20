@@ -63,6 +63,6 @@ a:hover {
     color: #e0e0e0;
 }
 
-img {
+.auth-container-welcome img {
     filter: brightness(0) invert(1);
 }

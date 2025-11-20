@@ -64,6 +64,6 @@ a:hover {
     cursor: pointer;
 }
 
-img {
+.register-container-welcome img {
     filter: brightness(0) invert(1);
 }
