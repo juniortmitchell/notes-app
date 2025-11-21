@@ -1,8 +1,17 @@
 import "./homeStyles.css"
 import { Container, Button } from "@mui/material"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 export default function Home() {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/notes")
+        }
+    }, [navigate])
+
     return (
         <>
             <Container className="home-container">
