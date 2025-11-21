@@ -22,35 +22,11 @@ import {
 import { useState, useEffect } from "react"
 import "./notesStyles.css"
 import { useNavigate } from "react-router-dom"
-
-// Mock data to match your image
-const mockNotes = [
-    {
-        id: 1,
-        title: "React Performance Optimization",
-        date: "29 Oct 2024",
-        tags: ["Dev", "React"],
-        content:
-            "Key performance optimization techniques:\n\n1. Code Splitting\n- Use React.lazy() for route-based splitting\n- Implement dynamic imports for heavy components\n\n2. Memoization\n- useMemo for expensive calculations\n- useCallback for function props",
-    },
-    {
-        id: 2,
-        title: "Japan Travel Planning",
-        date: "28 Oct 2024",
-        tags: ["Travel", "Personal"],
-        content: "Itinerary for Tokyo...",
-    },
-    {
-        id: 3,
-        title: "Favorite Pasta Recipes",
-        date: "27 Oct 2024",
-        tags: ["Cooking", "Recipes"],
-        content: "Carbonara, Cacio e Pepe...",
-    },
-]
+import { getNotes } from "../../services/api"
 
 export default function Notes() {
     const navigate = useNavigate()
+    const [notes, setNotes] = useState([])
 
     useEffect(() => {
         if (!localStorage.getItem("token")) {
@@ -58,12 +34,32 @@ export default function Notes() {
         }
     }, [navigate])
 
-    const [selectedNote, setSelectedNote] = useState(mockNotes[0])
+    useEffect(() => {
+        // Fetch notes from the backend when component mounts
+        async function fetchNotes() {
+            const token = localStorage.getItem("token")
+            if (token) {
+                const response = await getNotes(token)
+                if (response.success) {
+                    setNotes(response.data.notes)
 
-    const handleContentChange = (e) => {
+                    if (response.data.notes.length > 0) {
+                        setSelectedNote(response.data.notes[0])
+                    }
+                } else {
+                    console.error("Failed to fetch notes:", response.error)
+                }
+            }
+        }
+        fetchNotes()
+    }, [])
+
+    const [selectedNote, setSelectedNote] = useState(null)
+
+    const handleNoteChange = (field) => (e) => {
         setSelectedNote({
             ...selectedNote,
-            content: e.target.value,
+            [field]: e.target.value,
         })
     }
 
@@ -79,8 +75,8 @@ export default function Notes() {
                             </ListItemIcon>
                             <ListItemText
                                 primary="All Notes"
-                                primaryTypographyProps={{
-                                    fontWeight: "medium",
+                                slotProps={{
+                                    primary: { fontWeight: "medium" },
                                 }}
                             />
                         </ListItemButton>
@@ -92,8 +88,8 @@ export default function Notes() {
                             </ListItemIcon>
                             <ListItemText
                                 primary="Archived Notes"
-                                primaryTypographyProps={{
-                                    fontWeight: "medium",
+                                slotProps={{
+                                    primary: { fontWeight: "medium" },
                                 }}
                             />
                         </ListItemButton>
@@ -115,7 +111,7 @@ export default function Notes() {
                 </Box>
 
                 <List sx={{ overflow: "auto", flex: 1, px: 2 }}>
-                    {mockNotes.map((note) => (
+                    {notes.map((note) => (
                         <ListItem key={note.id} disablePadding sx={{ mb: 1 }}>
                             <ListItemButton
                                 selected={selectedNote.id === note.id}
@@ -126,11 +122,11 @@ export default function Notes() {
                                     borderRadius: 2,
                                     p: 2,
                                     backgroundColor:
-                                        selectedNote.id === note.id
+                                        selectedNote?.id === note.id
                                             ? "#fff"
                                             : "transparent",
                                     boxShadow:
-                                        selectedNote.id === note.id
+                                        selectedNote?.id === note.id
                                             ? "0 2px 4px rgba(0,0,0,0.05)"
                                             : "none",
                                 }}
@@ -140,7 +136,7 @@ export default function Notes() {
                                     fontWeight="bold"
                                     sx={{ mb: 1 }}
                                 >
-                                    {note.title}
+                                    {note.title || "Untitled Note"}
                                 </Typography>
                                 <Box
                                     sx={{
@@ -150,18 +146,19 @@ export default function Notes() {
                                         flexWrap: "wrap",
                                     }}
                                 >
-                                    {note.tags.map((tag) => (
-                                        <Chip
-                                            key={tag}
-                                            label={tag}
-                                            size="small"
-                                            sx={{
-                                                fontSize: "0.7rem",
-                                                height: 20,
-                                                backgroundColor: "#e5e7eb",
-                                            }}
-                                        />
-                                    ))}
+                                    {/* {note.tags &&
+                                        note.tags.map((tag) => (
+                                            <Chip
+                                                key={tag}
+                                                label={tag}
+                                                size="small"
+                                                sx={{
+                                                    fontSize: "0.7rem",
+                                                    height: 20,
+                                                    backgroundColor: "#e5e7eb",
+                                                }}
+                                            />
+                                        ))} */}
                                 </Box>
                                 <Typography
                                     variant="caption"
@@ -177,135 +174,182 @@ export default function Notes() {
 
             {/* 3. Right Column - Editor */}
             <Box className="notes-editor-column">
-                <Box className="editor-header">
-                    <Box sx={{ pt: 3, flex: 1, mr: 4 }}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            {selectedNote.title}
-                        </Typography>
+                {selectedNote ? (
+                    <>
+                        <Box className="editor-header">
+                            <Box sx={{ pt: 3, flex: 1, mr: 4 }}>
+                                <TextField
+                                    variant="standard"
+                                    fullWidth
+                                    placeholder="Untitled Note"
+                                    value={selectedNote.title}
+                                    onChange={handleNoteChange("title")}
+                                    slotProps={{
+                                        input: {
+                                            disableUnderline: true,
+                                            sx: {
+                                                fontSize: "2.125rem", // Matches h4 size
+                                                fontWeight: "bold",
+                                                mb: 1,
+                                            },
+                                        },
+                                    }}
+                                />
+
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 3,
+                                        mb: 2,
+                                        color: "text.secondary",
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1,
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight="bold"
+                                        >
+                                            Tags: Coming soon
+                                        </Typography>
+                                        {/* {selectedNote.tags.map((tag) => (
+                                            <Typography
+                                                key={tag}
+                                                variant="body2"
+                                            >
+                                                {tag},
+                                            </Typography>
+                                        ))} */}
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1,
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight="bold"
+                                        >
+                                            Last edited:
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            {new Date(
+                                                selectedNote.updatedAt
+                                            ).toLocaleDateString("en-US", {
+                                                day: "2-digit",
+                                                month: "short",
+                                                year: "numeric",
+                                            })}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+
+                            {/* Action Buttons (Top Right) */}
+                            <Box className="editor-actions" sx={{ pt: 3 }}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<ArchiveIcon />}
+                                    sx={{
+                                        justifyContent: "flex-start",
+                                        textTransform: "none",
+                                        color: "#374151",
+                                        borderColor: "#d1d5db",
+                                    }}
+                                >
+                                    Archive Note
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<DeleteIcon />}
+                                    sx={{
+                                        justifyContent: "flex-start",
+                                        textTransform: "none",
+                                        color: "#374151",
+                                        borderColor: "#d1d5db",
+                                    }}
+                                >
+                                    Delete Note
+                                </Button>
+                            </Box>
+                        </Box>
+
+                        {/* <Divider sx={{ my: 2 }} /> */}
 
                         <Box
                             sx={{
-                                display: "flex",
-                                gap: 3,
-                                mb: 2,
-                                color: "text.secondary",
+                                flex: 1,
+                                overflowY: "auto",
+                                minHeight: 0,
+                                px: 1,
                             }}
                         >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
+                            <TextField
+                                multiline
+                                fullWidth
+                                variant="standard"
+                                slotProps={{
+                                    input: { disableUnderline: true },
                                 }}
-                            >
-                                <Typography variant="body2" fontWeight="bold">
-                                    Tags:
-                                </Typography>
-                                {selectedNote.tags.map((tag) => (
-                                    <Typography key={tag} variant="body2">
-                                        {tag},
-                                    </Typography>
-                                ))}
-                            </Box>
-                            <Box
+                                value={selectedNote.content}
+                                onChange={handleNoteChange("content")}
                                 sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
+                                    "& .MuiInputBase-root": {
+                                        alignItems: "flex-start",
+                                    },
                                 }}
-                            >
-                                <Typography variant="body2" fontWeight="bold">
-                                    Last edited:
-                                </Typography>
-                                <Typography variant="body2">
-                                    {selectedNote.date}
-                                </Typography>
-                            </Box>
+                            />
                         </Box>
-                    </Box>
 
-                    {/* Action Buttons (Top Right) */}
-                    <Box className="editor-actions" sx={{ pt: 3 }}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ArchiveIcon />}
+                        {/* Bottom Actions */}
+                        <Box
                             sx={{
-                                justifyContent: "flex-start",
-                                textTransform: "none",
-                                color: "#374151",
-                                borderColor: "#d1d5db",
+                                mt: 2,
+                                mb: 3,
+                                pt: 2,
+                                display: "flex",
+                                gap: 2,
+                                pl: 1,
+                                flexShrink: 0, // Prevents buttons from being pushed off or squashed
+                                zIndex: 1,
                             }}
                         >
-                            Archive Note
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<DeleteIcon />}
-                            sx={{
-                                justifyContent: "flex-start",
-                                textTransform: "none",
-                                color: "#374151",
-                                borderColor: "#d1d5db",
-                            }}
-                        >
-                            Delete Note
-                        </Button>
-                    </Box>
-                </Box>
-
-                {/* <Divider sx={{ my: 2 }} /> */}
-
-                <Box
-                    sx={{
-                        flex: 1,
-                        overflowY: "auto",
-                        minHeight: 0,
-                        px: 1,
-                    }}
-                >
-                    <TextField
-                        multiline
-                        fullWidth
-                        variant="standard"
-                        InputProps={{ disableUnderline: true }}
-                        value={selectedNote.content}
-                        onChange={handleContentChange}
+                            <Button
+                                id="button"
+                                variant="contained"
+                                startIcon={<SaveIcon />}
+                            >
+                                Save Note
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                sx={{ flexShrink: 0 }}
+                                id="button"
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </>
+                ) : (
+                    <Box
                         sx={{
-                            "& .MuiInputBase-root": {
-                                alignItems: "flex-start",
-                            },
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                            color: "text.secondary",
                         }}
-                    />
-                </Box>
-
-                {/* Bottom Actions */}
-                <Box
-                    sx={{
-                        mt: 2,
-                        mb: 3,
-                        pt: 2,
-                        display: "flex",
-                        gap: 2,
-                        pl: 1,
-                        flexShrink: 0, // Prevents buttons from being pushed off or squashed
-                        zIndex: 1,
-                    }}
-                >
-                    <Button
-                        id="button"
-                        variant="contained"
-                        startIcon={<SaveIcon />}
                     >
-                        Save Note
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        sx={{ flexShrink: 0 }}
-                        id="button"
-                    >
-                        Cancel
-                    </Button>
-                </Box>
+                        <Typography>Select a note to view details</Typography>
+                    </Box>
+                )}
             </Box>
         </Container>
     )

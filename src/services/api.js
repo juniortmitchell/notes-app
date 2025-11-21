@@ -10,13 +10,16 @@ const API_BASE_URL = import.meta.env.API_URL || "http://localhost:5129/api"
  */
 export async function registerUser(userData) {
     try {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userData),
-        })
+        const response = await fetch(
+            `${API_BASE_URL}/auth/register-with-welcome-note`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+            }
+        )
 
         const data = await response.json()
 
@@ -68,19 +71,28 @@ export async function loginUser(credentials) {
     }
 }
 
-export async function healthCheck() {
+/** * Fetch notes for the authenticated user
+ * @param {string} token - JWT token for authentication
+ * @returns {Promise<Object>} - Response data containing notes
+ */
+export async function getNotes(token) {
     try {
-        const response = await fetch(`${API_BASE_URL}/health`, {
+        const response = await fetch(`${API_BASE_URL}/notes`, {
             method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         })
 
+        const data = await response.json()
+
         if (!response.ok) {
-            throw new Error("API is unreachable")
+            throw new Error(data.message || "Failed to fetch notes")
         }
 
-        return { success: true }
+        return { success: true, data }
     } catch (error) {
-        console.error("Health check error:", error)
+        console.error("Get notes error:", error)
         return {
             success: false,
             error: error.message || "Network error. Please try again.",
