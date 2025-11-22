@@ -108,7 +108,10 @@ export async function createNote(token) {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ title: "New Note", content: "" }),
+            body: JSON.stringify({
+                title: "Untitled Note",
+                content: "",
+            }),
         })
 
         const data = await response.json()

@@ -337,6 +337,7 @@ export default function Notes() {
                                 slotProps={{
                                     input: { disableUnderline: true },
                                 }}
+                                placeholder="Content goes here"
                                 value={selectedNote.content}
                                 onChange={handleNoteChange("content")}
                                 sx={{
@@ -395,13 +396,13 @@ export default function Notes() {
                             >
                                 Save Note
                             </Button>
-                            <Button
+                            {/* <Button
                                 variant="outlined"
                                 sx={{ flexShrink: 0 }}
                                 id="button"
                             >
                                 Cancel
-                            </Button>
+                            </Button> */}
                         </Box>
                     </>
                 ) : (
