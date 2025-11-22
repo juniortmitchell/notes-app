@@ -22,7 +22,12 @@ import {
 import { useState, useEffect } from "react"
 import "./notesStyles.css"
 import { useNavigate } from "react-router-dom"
-import { getNotes } from "../../services/api"
+import {
+    getNotes,
+    updateNote,
+    deleteNote,
+    createNote,
+} from "../../services/api"
 
 export default function Notes() {
     const navigate = useNavigate()
@@ -104,6 +109,19 @@ export default function Notes() {
                         id="button"
                         variant="contained"
                         startIcon={<AddIcon />}
+                        onClick={async () => {
+                            const newNoteResponse = await createNote(
+                                localStorage.getItem("token")
+                            )
+                            if (newNoteResponse.success) {
+                                setNotes([...notes, newNoteResponse.data])
+                            } else {
+                                console.error(
+                                    "Failed to create note:",
+                                    newNoteResponse.error
+                                )
+                            }
+                        }}
                         fullWidth
                     >
                         Create New Note
@@ -114,7 +132,7 @@ export default function Notes() {
                     {notes.map((note) => (
                         <ListItem key={note.id} disablePadding sx={{ mb: 1 }}>
                             <ListItemButton
-                                selected={selectedNote.id === note.id}
+                                selected={selectedNote?.id === note.id}
                                 onClick={() => setSelectedNote(note)}
                                 sx={{
                                     flexDirection: "column",
@@ -269,6 +287,27 @@ export default function Notes() {
                                 <Button
                                     variant="outlined"
                                     startIcon={<DeleteIcon />}
+                                    onClick={async () => {
+                                        const response = await deleteNote(
+                                            localStorage.getItem("token"),
+                                            selectedNote.id
+                                        )
+                                        if (response.success) {
+                                            setNotes((prevNotes) =>
+                                                prevNotes.filter(
+                                                    (note) =>
+                                                        note.id !==
+                                                        selectedNote.id
+                                                )
+                                            )
+                                            setSelectedNote(null)
+                                        } else {
+                                            console.error(
+                                                "Failed to delete note:",
+                                                response.error
+                                            )
+                                        }
+                                    }}
                                     sx={{
                                         justifyContent: "flex-start",
                                         textTransform: "none",
@@ -325,6 +364,34 @@ export default function Notes() {
                                 id="button"
                                 variant="contained"
                                 startIcon={<SaveIcon />}
+                                onClick={async () => {
+                                    const response = await updateNote(
+                                        localStorage.getItem("token"),
+                                        selectedNote.id,
+                                        selectedNote
+                                    )
+
+                                    if (response.success) {
+                                        const updatedNote =
+                                            response.data.note || response.data
+
+                                        // Update note in local state
+                                        setNotes((prevNotes) =>
+                                            prevNotes.map((note) =>
+                                                note.id === selectedNote.id
+                                                    ? updatedNote
+                                                    : note
+                                            )
+                                        )
+
+                                        setSelectedNote(updatedNote)
+                                    } else {
+                                        console.error(
+                                            "Failed to save note:",
+                                            response.error
+                                        )
+                                    }
+                                }}
                             >
                                 Save Note
                             </Button>

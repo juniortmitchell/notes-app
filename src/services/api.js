@@ -99,3 +99,81 @@ export async function getNotes(token) {
         }
     }
 }
+
+export async function createNote(token) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/notes`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ title: "New Note", content: "" }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to create note")
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error("Create note error:", error)
+        return {
+            success: false,
+            error: error.message || "Network error. Please try again.",
+        }
+    }
+}
+
+export async function deleteNote(token, noteId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+
+        if (!response.ok) {
+            const data = await response.json()
+            throw new Error(data.message || "Failed to delete note")
+        }
+
+        return { success: true }
+    } catch (error) {
+        console.error("Delete note error:", error)
+        return {
+            success: false,
+            error: error.message || "Network error. Please try again.",
+        }
+    }
+}
+
+export async function updateNote(token, noteId, noteData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(noteData),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to update note")
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error("Update note error:", error)
+        return {
+            success: false,
+            error: error.message || "Network error. Please try again.",
+        }
+    }
+}
