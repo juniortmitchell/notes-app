@@ -11,6 +11,7 @@ import {
     TextField,
     Chip,
     Container,
+    IconButton,
 } from "@mui/material"
 import {
     Home as HomeIcon,
@@ -18,6 +19,7 @@ import {
     Delete as DeleteIcon,
     Add as AddIcon,
     Save as SaveIcon,
+    Close as CloseIcon,
 } from "@mui/icons-material"
 import { useState, useEffect } from "react"
 import "./notesStyles.css"
@@ -61,6 +63,29 @@ export default function Notes() {
 
     const [selectedNote, setSelectedNote] = useState(null)
 
+    const handleDeleteNote = async (noteId) => {
+        const token = localStorage.getItem("token")
+        if (!token) {
+            navigate("/login")
+            return
+        }
+
+        const response = await deleteNote(token, noteId)
+        if (response.success) {
+            setNotes((prevNotes) => {
+                const updatedNotes = prevNotes.filter(
+                    (note) => note.id !== noteId
+                )
+                if (selectedNote?.id === noteId) {
+                    setSelectedNote(updatedNotes[0] || null)
+                }
+                return updatedNotes
+            })
+        } else {
+            console.error("Failed to delete note:", response.error)
+        }
+    }
+
     const handleNoteChange = (field) => (e) => {
         setSelectedNote({
             ...selectedNote,
@@ -80,19 +105,6 @@ export default function Notes() {
                             </ListItemIcon>
                             <ListItemText
                                 primary="All Notes"
-                                slotProps={{
-                                    primary: { fontWeight: "medium" },
-                                }}
-                            />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <ArchiveIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Archived Notes"
                                 slotProps={{
                                     primary: { fontWeight: "medium" },
                                 }}
@@ -124,7 +136,7 @@ export default function Notes() {
                         }}
                         fullWidth
                     >
-                        Create New Note
+                        New Note
                     </Button>
                 </Box>
 
@@ -132,6 +144,7 @@ export default function Notes() {
                     {notes.map((note) => (
                         <ListItem key={note.id} disablePadding sx={{ mb: 1 }}>
                             <ListItemButton
+                                className="note-list-button"
                                 selected={selectedNote?.id === note.id}
                                 onClick={() => setSelectedNote(note)}
                                 sx={{
@@ -149,13 +162,28 @@ export default function Notes() {
                                             : "none",
                                 }}
                             >
-                                <Typography
-                                    variant="subtitle1"
-                                    fontWeight="bold"
-                                    sx={{ mb: 1 }}
-                                >
-                                    {note.title || "Untitled Note"}
-                                </Typography>
+                                <Box className="note-title-row">
+                                    <Typography
+                                        variant="subtitle1"
+                                        fontWeight="bold"
+                                        sx={{ mb: 1 }}
+                                    >
+                                        {note.title || "Untitled Note"}
+                                    </Typography>
+                                    {selectedNote?.id === note.id && (
+                                        <IconButton
+                                            className="note-inline-delete"
+                                            size="small"
+                                            aria-label="Delete note"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleDeleteNote(note.id)
+                                            }}
+                                        >
+                                            <CloseIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                </Box>
                                 <Box
                                     sx={{
                                         display: "flex",
@@ -269,55 +297,6 @@ export default function Notes() {
                                     </Box>
                                 </Box>
                             </Box>
-
-                            {/* Action Buttons (Top Right) */}
-                            <Box className="editor-actions" sx={{ pt: 3 }}>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<ArchiveIcon />}
-                                    sx={{
-                                        justifyContent: "flex-start",
-                                        textTransform: "none",
-                                        color: "#374151",
-                                        borderColor: "#d1d5db",
-                                    }}
-                                >
-                                    Archive Note
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<DeleteIcon />}
-                                    onClick={async () => {
-                                        const response = await deleteNote(
-                                            localStorage.getItem("token"),
-                                            selectedNote.id
-                                        )
-                                        if (response.success) {
-                                            setNotes((prevNotes) =>
-                                                prevNotes.filter(
-                                                    (note) =>
-                                                        note.id !==
-                                                        selectedNote.id
-                                                )
-                                            )
-                                            setSelectedNote(null)
-                                        } else {
-                                            console.error(
-                                                "Failed to delete note:",
-                                                response.error
-                                            )
-                                        }
-                                    }}
-                                    sx={{
-                                        justifyContent: "flex-start",
-                                        textTransform: "none",
-                                        color: "#374151",
-                                        borderColor: "#d1d5db",
-                                    }}
-                                >
-                                    Delete Note
-                                </Button>
-                            </Box>
                         </Box>
 
                         {/* <Divider sx={{ my: 2 }} /> */}
@@ -396,13 +375,6 @@ export default function Notes() {
                             >
                                 Save Note
                             </Button>
-                            {/* <Button
-                                variant="outlined"
-                                sx={{ flexShrink: 0 }}
-                                id="button"
-                            >
-                                Cancel
-                            </Button> */}
                         </Box>
                     </>
                 ) : (

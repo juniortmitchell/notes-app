@@ -1,16 +1,8 @@
-# React + Vite
+# Junior's notes app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is version 1. right now you can create, read, update and delete notes. I am working on implementing other features like tags, sorting by tags, sorting by created/updated timestamps, archiving notes and searching through all notes.
 
-Currently, two official plugins are available:
+Also, the auth system is super basic, its kind of like Roblox's one where you just sign up w/ a username and password. I am going to change this down the line to email and handle password resets thru email. Maybe add sessions instead of JWT etc.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Right now there is registering, logging in and the notes page on the frontend.
+On the backend there is password hashing, JWT auth, rate limiting, and all the other typical things you'd find in a .NET Web API.

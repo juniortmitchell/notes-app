@@ -19,11 +19,27 @@
 
 /* Middle Column - Note List */
 .notes-list-column {
-    width: 280px;
+    width: 25vw;
     border-right: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+}
+
+.note-list-button {
+    width: 100%;
+}
+
+.note-title-row {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.note-title-row .note-inline-delete {
+    margin-left: auto;
+    padding: 2px;
 }
 
 /* Right Column - Editor */
@@ -53,5 +69,27 @@
 @media (max-width: 900px) {
     .notes-sidebar {
         display: none;
+    }
+    .notes-container {
+        display: flex;
+        flex-direction: column;
+    }
+    .notes-list-column {
+        width: 100vw;
+        height: 30vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #c4c4c4 transparent;
+    }
+
+    .notes-list-column::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .notes-list-column::-webkit-scrollbar-thumb {
+        background-color: #c4c4c4;
+        border-radius: 999px;
+        border: 2px solid transparent;
     }
 }

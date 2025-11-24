@@ -1,6 +1,39 @@
 // API Base URL - will use environment variable or fallback to localhost
 const API_BASE_URL = import.meta.env.API_URL || "http://localhost:5129/api"
 
+function decodeTokenPayload(token) {
+    try {
+        const base64Url = token.split(".")[1]
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map((c) => {
+                    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+                })
+                .join("")
+        )
+        return JSON.parse(jsonPayload)
+    } catch (error) {
+        console.warn("Unable to decode token payload", error)
+        return null
+    }
+}
+
+export function getUserIdFromToken(token) {
+    if (!token) return null
+    const payload = decodeTokenPayload(token)
+
+    return (
+        payload?.sub ||
+        payload?.nameid ||
+        payload?.nameId ||
+        payload?.userId ||
+        payload?.UserId ||
+        null
+    )
+}
+
 /**
  * Register a new user
  * @param {Object} userData - User registration data
@@ -174,6 +207,68 @@ export async function updateNote(token, noteId, noteData) {
         return { success: true, data }
     } catch (error) {
         console.error("Update note error:", error)
+        return {
+            success: false,
+            error: error.message || "Network error. Please try again.",
+        }
+    }
+}
+
+export async function getUserProfile(token) {
+    try {
+        const userId = getUserIdFromToken(token)
+        if (!userId) {
+            throw new Error("Unable to determine user from token")
+        }
+
+        const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data?.message || "Failed to load profile")
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error("Get user profile error:", error)
+        return {
+            success: false,
+            error: error.message || "Network error. Please try again.",
+        }
+    }
+}
+
+export async function updateUserProfile(token, userData) {
+    try {
+        const userId = getUserIdFromToken(token)
+        if (!userId) {
+            throw new Error("Unable to determine user from token")
+        }
+
+        const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(userData),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data?.message || "Failed to update profile")
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error("Update user profile error:", error)
         return {
             success: false,
             error: error.message || "Network error. Please try again.",

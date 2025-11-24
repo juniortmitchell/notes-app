@@ -8,6 +8,7 @@ import Notes from "./components/Notes/Notes.jsx"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Header from "./components/Header/Header.jsx"
 import Home from "./components/Home/Home.jsx"
+import Profile from "./components/Profile/Profile.jsx"
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: "/notes",
                 element: <Notes />,
+            },
+            {
+                path: "/profile",
+                element: <Profile />,
             },
             {
                 path: "/",

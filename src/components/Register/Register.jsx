@@ -49,8 +49,8 @@ export default function Register() {
     return (
         <AuthForm
             mode="register"
-            title="You made the right choice."
-            subtitle="Create an account to start taking notes."
+            title="Let's get started!"
+            subtitle="Create an account to begin taking notes."
             switchText="Already have an account?"
             switchLink="Log in"
             onSwitchClick={() => {
