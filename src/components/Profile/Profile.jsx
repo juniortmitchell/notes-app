@@ -219,7 +219,7 @@ export default function Profile() {
                         </Typography>
                         <Typography color="text.secondary" sx={{ mb: 1 }}>
                             {formValues.email ||
-                                "Add an email so we can keep in touch."}
+                                "!! Under Construction !! NOT WORKING YET "}
                         </Typography>
                         {getMemberSince(profile) && (
                             <Typography variant="body2" color="text.secondary">
@@ -248,6 +248,7 @@ export default function Profile() {
                             value={formValues.fullName}
                             onChange={handleChange("fullName")}
                             placeholder="Add your name"
+                            slotProps={{ input: { readOnly: true } }}
                             fullWidth
                         />
                         <TextField
@@ -256,20 +257,21 @@ export default function Profile() {
                             value={formValues.email}
                             onChange={handleChange("email")}
                             placeholder="Add an email address"
+                            slotProps={{ input: { readOnly: true } }}
                             fullWidth
                         />
                         <TextField
                             label="Username"
                             value={formValues.username}
                             onChange={handleChange("username")}
-                            InputProps={{ readOnly: true }}
-                            helperText="Usernames are managed by the administrator"
+                            slotProps={{ input: { readOnly: true } }}
                             fullWidth
                         />
                         <TextField
                             label="Bio"
                             value={formValues.bio}
                             onChange={handleChange("bio")}
+                            slotProps={{ input: { readOnly: true } }}
                             placeholder="Tell us a little about yourself"
                             multiline
                             minRows={3}

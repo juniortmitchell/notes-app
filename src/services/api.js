@@ -1,5 +1,8 @@
-// API Base URL - will use environment variable or fallback to localhost
-const API_BASE_URL = import.meta.env.API_URL || "http://localhost:5129/api"
+// API Base URL - prefer Vite env var, fallback to generic or localhost
+const API_BASE_URL =
+    import.meta.env?.VITE_API_URL ||
+    import.meta.env?.API_URL ||
+    "http://localhost:5129/api"
 
 function decodeTokenPayload(token) {
     try {
