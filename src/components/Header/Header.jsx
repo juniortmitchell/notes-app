@@ -1,5 +1,5 @@
 import "./headerStyles.css"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { IconButton, Menu, MenuItem } from "@mui/material"
 import { AccountCircle } from "@mui/icons-material"
@@ -8,6 +8,8 @@ export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const location = useLocation()
+    const navigate = useNavigate()
+    const homePath = import.meta.env.BASE_URL || "/notes-app/"
 
     // Check if user is logged in (has JWT token)
     // Re-check whenever the route changes
@@ -31,7 +33,7 @@ export default function Header() {
         localStorage.removeItem("token")
         setIsLoggedIn(false)
         handleMenuClose()
-        window.location.href = "/"
+        navigate(homePath, { replace: true })
     }
 
     return (

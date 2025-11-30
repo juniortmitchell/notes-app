@@ -10,7 +10,7 @@ import Home from "./components/Home/Home.jsx"
 import Profile from "./components/Profile/Profile.jsx"
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx"
 
-const router = createBrowserRouter([
+const routes = [
     {
         path: "/",
         element: <App />,
@@ -33,12 +33,16 @@ const router = createBrowserRouter([
                 element: <Profile />,
             },
             {
-                path: "/",
+                index: true,
                 element: <Home />,
             },
         ],
     },
-])
+]
+
+const router = createBrowserRouter(routes, {
+    basename: import.meta.env.BASE_URL || "/",
+})
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>

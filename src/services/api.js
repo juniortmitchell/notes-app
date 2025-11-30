@@ -4,6 +4,16 @@ const API_BASE_URL =
     import.meta.env?.API_URL ||
     "http://localhost:5129/api"
 
+export function checkTokenValidity(token) {
+    if (!token) return false
+    const payload = decodeTokenPayload(token)
+    if (!payload || !payload.exp) return false
+    const oneWeek = 7 * 24 * 60 * 60 * 1000
+
+    if (Date.now() >= payload.exp * 1000) return false
+    return true
+}
+
 function decodeTokenPayload(token) {
     try {
         const base64Url = token.split(".")[1]

@@ -32,9 +32,9 @@ export default function Register() {
 
             // Store token
             localStorage.setItem("token", result.data.token)
-            if (localStorage.getItem("token")) {
-                console.log("Token stored:", localStorage.getItem("token"))
-            }
+            // if (localStorage.getItem("token")) {
+            //     console.log("Token stored:", localStorage.getItem("token"))
+            // }
 
             setTimeout(() => {
                 navigate("/notes")

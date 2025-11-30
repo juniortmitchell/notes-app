@@ -29,6 +29,7 @@ import {
     updateNote,
     deleteNote,
     createNote,
+    checkTokenValidity,
 } from "../../services/api"
 
 export default function Notes() {
@@ -36,7 +37,7 @@ export default function Notes() {
     const [notes, setNotes] = useState([])
 
     useEffect(() => {
-        if (!localStorage.getItem("token")) {
+        if (checkTokenValidity(localStorage.getItem("token")) === false) {
             navigate("/login")
         }
     }, [navigate])
