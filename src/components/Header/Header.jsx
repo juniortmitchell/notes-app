@@ -10,6 +10,9 @@ export default function Header() {
     const location = useLocation()
     const navigate = useNavigate()
     const homePath = import.meta.env.BASE_URL || "/notes-app/"
+    
+    // Check if we're on the home page
+    const isHomePage = location.pathname === "/" || location.pathname === homePath || location.pathname === "/notes-app"
 
     // Check if user is logged in (has JWT token)
     // Re-check whenever the route changes
@@ -37,7 +40,7 @@ export default function Header() {
     }
 
     return (
-        <header className="app-header">
+        <header className={`app-header ${isHomePage ? 'header-home-theme' : ''}`}>
             <div className="header-logo-container">
                 <Link className="header-link" to="/">
                     <h1 className="header-logo">notes.</h1>

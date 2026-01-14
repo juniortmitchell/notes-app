@@ -67,6 +67,19 @@
     white-space: nowrap;
 }
 
+/* White header theme for home page */
+.header-home-theme .header-link {
+    color: white;
+}
+
+.header-home-theme .header-links {
+    color: white;
+}
+
+.header-home-theme .header-logo-container p {
+    color: white;
+}
+
 /* Mobile responsive styles */
 /* @media (max-width: 768px) {
     .app-header {
